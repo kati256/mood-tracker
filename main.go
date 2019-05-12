@@ -1,14 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
-	"bufio"
 	"os/user"
 	"path/filepath"
 	"strconv"
-	"time"
 	"strings"
+	"time"
 )
 
 var dataDirectory string = ""
@@ -37,7 +37,7 @@ func CreateSaveDirectory() error {
 
 type MoodEntry struct {
 	Rating uint64
-	Date time.Time
+	Date   time.Time
 }
 
 func (m MoodEntry) String() string {
@@ -79,7 +79,7 @@ func main() {
 	}
 	dailyMood := MoodEntry{
 		Rating: rate,
-		Date: time.Now(),
+		Date:   time.Now(),
 	}
 	fmt.Println(dailyMood.String())
 }
