@@ -20,6 +20,17 @@ func exists(path string) (bool, error) {
 	return false, err
 }
 
+func CreateSaveDirectory() error {
+	err := os.Mkdir(dataDirectory, 0700)
+	if err != nil {
+		return err
+	}
+	moodFile := filepath.Join(dataDirectory, "moods.csv")
+	file, err := os.Create(moodFile)
+	file.Close()
+	return err
+}
+
 func main() {
 	user, err := user.Current()
 	if err != nil {
@@ -32,8 +43,11 @@ func main() {
 		fmt.Println(err.Error())
 	}
 	if !saveDirExists {
-		fmt.Println("Gotta make the config")
-		os.Exit(-1)
+		err := CreateSaveDirectory()
+		if err != nil {
+			fmt.Printf("Failed to create directory structure.\n%v\n", err)
+			os.Exit(-1)
+		}
 	}
 	fmt.Println("All set up!")
 	fmt.Println("Hi!")
