@@ -3,8 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
+	"bufio"
 	"os/user"
 	"path/filepath"
+	"strconv"
+	"time"
+	"strings"
 )
 
 var dataDirectory string = ""
@@ -31,6 +35,17 @@ func CreateSaveDirectory() error {
 	return err
 }
 
+type MoodEntry struct {
+	Rating uint64
+	Date time.Time
+}
+
+func (m MoodEntry) String() string {
+	return fmt.Sprintf("%s: %d/10",
+		m.Date.Format("Mon 2/1/2006"),
+		m.Rating)
+}
+
 func main() {
 	user, err := user.Current()
 	if err != nil {
@@ -49,6 +64,22 @@ func main() {
 			os.Exit(-1)
 		}
 	}
-	fmt.Println("All set up!")
-	fmt.Println("Hi!")
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Please rate your mood in scale of 1 to 10: ")
+	ratestr, err := reader.ReadString('\n')
+	ratestr = strings.TrimSpace(ratestr)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(-1)
+	}
+	rate, err := strconv.ParseUint(ratestr, 10, 8)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(-1)
+	}
+	dailyMood := MoodEntry{
+		Rating: rate,
+		Date: time.Now(),
+	}
+	fmt.Println(dailyMood.String())
 }
