@@ -46,6 +46,25 @@ func (m MoodEntry) String() string {
 		m.Rating)
 }
 
+func AskForMood() (*MoodEntry, error) {
+	fmt.Print("Please rate your mood in scale of 1 to 10: ")
+	reader := bufio.NewReader(os.Stdin)
+	ratestr, err := reader.ReadString('\n')
+	ratestr = strings.TrimSpace(ratestr)
+	if err != nil {
+		return nil, err
+	}
+	rate, err := strconv.ParseUint(ratestr, 10, 8)
+	if err != nil {
+		return nil, err
+	}
+	mood := &MoodEntry{
+		Rating: rate,
+		Date:   time.Now(),
+	}
+	return mood, nil
+}
+
 func main() {
 	user, err := user.Current()
 	if err != nil {
@@ -64,22 +83,10 @@ func main() {
 			os.Exit(-1)
 		}
 	}
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Please rate your mood in scale of 1 to 10: ")
-	ratestr, err := reader.ReadString('\n')
-	ratestr = strings.TrimSpace(ratestr)
+	dailyMood, err := AskForMood()
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(-1)
-	}
-	rate, err := strconv.ParseUint(ratestr, 10, 8)
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		os.Exit(-1)
-	}
-	dailyMood := MoodEntry{
-		Rating: rate,
-		Date:   time.Now(),
 	}
 	fmt.Println(dailyMood.String())
 }
