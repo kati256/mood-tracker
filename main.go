@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/csv"
 	"fmt"
 	"os"
 	"os/user"
@@ -46,6 +47,26 @@ func (m MoodEntry) String() string {
 		m.Rating)
 }
 
+func (m MoodEntry) CSVFormat() []string {
+	return []string{m.Date.String(), fmt.Sprintf("%d", m.Rating)}
+}
+
+func (m MoodEntry) Save() error {
+	moodFile := filepath.Join(dataDirectory, "moods.csv")
+	file, err := os.OpenFile(moodFile,
+		os.O_RDWR|os.O_APPEND|os.O_CREATE,
+		0755)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+	records := m.CSVFormat()
+	err = writer.Write(records)
+	return err
+}
+
 func AskForMood() (*MoodEntry, error) {
 	fmt.Print("Please rate your mood in scale of 1 to 10: ")
 	reader := bufio.NewReader(os.Stdin)
@@ -84,6 +105,11 @@ func main() {
 		}
 	}
 	dailyMood, err := AskForMood()
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(-1)
+	}
+	err = dailyMood.Save()
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(-1)
