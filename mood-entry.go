@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -23,8 +22,7 @@ func (m MoodEntry) CSVFormat() []string {
 	return []string{m.Date.String(), fmt.Sprintf("%d", m.Rating)}
 }
 
-func (m MoodEntry) Save() error {
-	moodFile := filepath.Join(dataDirectory, "moods.csv")
+func (m MoodEntry) Save(moodFile string) error {
 	file, err := os.OpenFile(moodFile,
 		os.O_RDWR|os.O_APPEND|os.O_CREATE,
 		0755)

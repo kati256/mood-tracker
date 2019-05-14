@@ -77,7 +77,7 @@ func main() {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(-1)
 	}
-	err = dailyMood.Save()
+	err = dailyMood.Save(filepath.Join(dataDirectory, "moods.csv"))
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(-1)
