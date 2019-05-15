@@ -72,12 +72,21 @@ func main() {
 			os.Exit(-1)
 		}
 	}
+	moodFilePath := filepath.Join(dataDirectory, "moods.csv")
+	entries, err := LoadCSV(moodFilePath)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(-1)
+	}
+	for _, entry := range entries {
+		fmt.Println(entry.String())
+	}
 	dailyMood, err := AskForMood()
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(-1)
 	}
-	err = dailyMood.Save(filepath.Join(dataDirectory, "moods.csv"))
+	err = dailyMood.Save(moodFilePath)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(-1)

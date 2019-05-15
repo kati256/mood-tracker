@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"time"
@@ -22,7 +23,7 @@ func FromCSVRecord(record []string) (*MoodEntry, error) {
 	if len(record) != 2 {
 		return nil, BadRecord
 	}
-	time, err := time.Parse(record[0], dateFormat)
+	time, err := time.Parse(dateFormat, record[0])
 	if err != nil {
 		return nil, err
 	}
@@ -60,4 +61,31 @@ func (m MoodEntry) Save(moodFile string) error {
 	records := m.CSVFormat()
 	err = writer.Write(records)
 	return err
+}
+
+func LoadCSV(moodFile string) ([]MoodEntry, error) {
+	var entries []MoodEntry
+	file, err := os.OpenFile(moodFile,
+		os.O_RDONLY,
+		0755)
+	if err != nil {
+		return entries, err
+	}
+
+	reader := csv.NewReader(file)
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return entries, err
+		}
+		entry, err := FromCSVRecord(record)
+		if err != nil {
+			return entries, err
+		}
+		entries = append(entries, *entry)
+	}
+	return entries, nil
 }
