@@ -27,6 +27,9 @@ func FromCSVRecord(record []string) (*MoodEntry, error) {
 		return nil, err
 	}
 	rating, err := strconv.ParseUint(record[1], 10, 64)
+	if err != nil {
+		return nil, err
+	}
 	entry := &MoodEntry{
 		Rating: rating,
 		Date:   time,
